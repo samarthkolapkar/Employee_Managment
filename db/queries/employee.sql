@@ -24,7 +24,12 @@ WHERE
         ) ILIKE '%' || $1::VARCHAR || '%'
     );
 
-
-
-
-
+-- name: GetEmployeefromMaker :one
+SELECT
+    id,
+    employee_data
+FROM
+    employee_maker
+WHERE
+    id=$1
+    AND status=$2;

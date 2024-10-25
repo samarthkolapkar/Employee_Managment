@@ -28,5 +28,6 @@ type EmployeeList struct {
 }
 
 type EmployeeForward struct {
-	Id int64 `json:id`
+	Id     int64  `json:"id"`
+	Status string `json:"status"`
 }

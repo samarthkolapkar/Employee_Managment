@@ -23,6 +23,7 @@ func main() {
 	connection.IntializeDB(dsn)
 	http.HandleFunc("/employeeList", handlers.HandleEmployeeList)
 	http.HandleFunc("/addEmployee", handlers.HandleAddEmployee)
+	http.HandleFunc("/employee_get", handlers.HandleEmployeeForward)
 	fmt.Println("Listening on port 8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic(err)

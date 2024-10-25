@@ -8,6 +8,7 @@ package generated
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 )
 
 const employeeList = `-- name: EmployeeList :many
@@ -80,4 +81,32 @@ func (q *Queries) EmployeeList(ctx context.Context, dollar_1 string) ([]Employee
 		return nil, err
 	}
 	return items, nil
+}
+
+const getEmployeefromMaker = `-- name: GetEmployeefromMaker :one
+SELECT
+    id,
+    employee_data
+FROM
+    employee_maker
+WHERE
+    id=$1
+    AND status=$2
+`
+
+type GetEmployeefromMakerParams struct {
+	ID     int32
+	Status string
+}
+
+type GetEmployeefromMakerRow struct {
+	ID           int32
+	EmployeeData json.RawMessage
+}
+
+func (q *Queries) GetEmployeefromMaker(ctx context.Context, arg GetEmployeefromMakerParams) (GetEmployeefromMakerRow, error) {
+	row := q.db.QueryRowContext(ctx, getEmployeefromMaker, arg.ID, arg.Status)
+	var i GetEmployeefromMakerRow
+	err := row.Scan(&i.ID, &i.EmployeeData)
+	return i, err
 }
