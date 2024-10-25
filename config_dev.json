@@ -1,0 +1,9 @@
+{
+	"db_conn_url": "host=localhost port=5432 user=postgres password=Sbk@5885 dbname=service1_db sslmode=disable",
+	"db_host": "localhost",
+	"db_port": 5432,
+	"db_user": "postgres",
+	"db_password": "Sbk@5885",
+	"db_name": "service1_db",
+	"app_server_port": "8080"
+}

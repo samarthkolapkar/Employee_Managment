@@ -1,0 +1,9 @@
+version: "2"
+sql:
+  - engine: "postgresql"  # or "postgresql" if using PostgreSQL
+    schema: "/db/migrations"   # Path to your schema file
+    queries: "/db/queries" # Path to your queries file
+    gen:
+      go:
+        package: "generated"  # Name of the Go package for generated code
+        out: "generated"      # Directory for the generated Go code
