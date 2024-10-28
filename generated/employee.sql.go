@@ -44,7 +44,7 @@ type EmployeeListRow struct {
 	AddressStreet string
 	AddressCity   string
 	AddressState  string
-	AddressZip    string
+	AddressZip    sql.NullInt64
 	Age           int32
 }
 
@@ -83,7 +83,52 @@ func (q *Queries) EmployeeList(ctx context.Context, dollar_1 string) ([]Employee
 	return items, nil
 }
 
-const getEmployeefromMaker = `-- name: GetEmployeefromMaker :one
+const getEmployeeDataFrom = `-- name: GetEmployeeDataFrom :one
+SELECT
+    e.first_name,
+    e.middle_name,
+    e.last_name,
+    e.pan_number,
+    e.address_street,
+    e.address_city,
+    e.address_state,
+    e.address_zip,
+    e.age
+FROM
+    employee e 
+WHERE id=$1
+`
+
+type GetEmployeeDataFromRow struct {
+	FirstName     string
+	MiddleName    sql.NullString
+	LastName      string
+	PanNumber     string
+	AddressStreet string
+	AddressCity   string
+	AddressState  string
+	AddressZip    sql.NullInt64
+	Age           int32
+}
+
+func (q *Queries) GetEmployeeDataFrom(ctx context.Context, id int32) (GetEmployeeDataFromRow, error) {
+	row := q.db.QueryRowContext(ctx, getEmployeeDataFrom, id)
+	var i GetEmployeeDataFromRow
+	err := row.Scan(
+		&i.FirstName,
+		&i.MiddleName,
+		&i.LastName,
+		&i.PanNumber,
+		&i.AddressStreet,
+		&i.AddressCity,
+		&i.AddressState,
+		&i.AddressZip,
+		&i.Age,
+	)
+	return i, err
+}
+
+const getEmployeefromMaker = `-- name: GetEmployeefromMaker :many
 SELECT
     id,
     employee_data
@@ -104,9 +149,25 @@ type GetEmployeefromMakerRow struct {
 	EmployeeData json.RawMessage
 }
 
-func (q *Queries) GetEmployeefromMaker(ctx context.Context, arg GetEmployeefromMakerParams) (GetEmployeefromMakerRow, error) {
-	row := q.db.QueryRowContext(ctx, getEmployeefromMaker, arg.ID, arg.Status)
-	var i GetEmployeefromMakerRow
-	err := row.Scan(&i.ID, &i.EmployeeData)
-	return i, err
+func (q *Queries) GetEmployeefromMaker(ctx context.Context, arg GetEmployeefromMakerParams) ([]GetEmployeefromMakerRow, error) {
+	rows, err := q.db.QueryContext(ctx, getEmployeefromMaker, arg.ID, arg.Status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetEmployeefromMakerRow
+	for rows.Next() {
+		var i GetEmployeefromMakerRow
+		if err := rows.Scan(&i.ID, &i.EmployeeData); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

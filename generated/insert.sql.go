@@ -7,6 +7,7 @@ package generated
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 )
 
@@ -26,6 +27,51 @@ type InsertEmployeeParams struct {
 
 func (q *Queries) InsertEmployee(ctx context.Context, arg InsertEmployeeParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, insertEmployee, arg.EmployeeData, arg.Status)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
+const insertIntoEmployee = `-- name: InsertIntoEmployee :one
+INSERT INTO employee(
+    first_name,
+    middle_name,
+    last_name,
+    pan_number,
+    address_street,
+    address_city,
+    address_state,
+    address_zip,
+    age
+)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+RETURNING id
+`
+
+type InsertIntoEmployeeParams struct {
+	FirstName     string
+	MiddleName    sql.NullString
+	LastName      string
+	PanNumber     string
+	AddressStreet string
+	AddressCity   string
+	AddressState  string
+	AddressZip    sql.NullInt64
+	Age           int32
+}
+
+func (q *Queries) InsertIntoEmployee(ctx context.Context, arg InsertIntoEmployeeParams) (int32, error) {
+	row := q.db.QueryRowContext(ctx, insertIntoEmployee,
+		arg.FirstName,
+		arg.MiddleName,
+		arg.LastName,
+		arg.PanNumber,
+		arg.AddressStreet,
+		arg.AddressCity,
+		arg.AddressState,
+		arg.AddressZip,
+		arg.Age,
+	)
 	var id int32
 	err := row.Scan(&id)
 	return id, err

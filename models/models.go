@@ -31,3 +31,7 @@ type EmployeeForward struct {
 	Id     int64  `json:"id"`
 	Status string `json:"status"`
 }
+
+type ApproveEmployee struct {
+	Id int64 `json:"id"`
+}

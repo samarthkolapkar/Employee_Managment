@@ -24,6 +24,8 @@ func main() {
 	http.HandleFunc("/employeeList", handlers.HandleEmployeeList)
 	http.HandleFunc("/addEmployee", handlers.HandleAddEmployee)
 	http.HandleFunc("/employee_get", handlers.HandleEmployeeForward)
+	http.HandleFunc("/employee_approve", handlers.HandleEmployeeApprove)
+	http.HandleFunc("/inactive_employee", handlers.HandleEmployeeInactive)
 	fmt.Println("Listening on port 8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic(err)

@@ -24,7 +24,7 @@ WHERE
         ) ILIKE '%' || $1::VARCHAR || '%'
     );
 
--- name: GetEmployeefromMaker :one
+-- name: GetEmployeefromMaker :many
 SELECT
     id,
     employee_data
@@ -33,3 +33,18 @@ FROM
 WHERE
     id=$1
     AND status=$2;
+
+-- name: GetEmployeeDataFrom :one
+SELECT
+    e.first_name,
+    e.middle_name,
+    e.last_name,
+    e.pan_number,
+    e.address_street,
+    e.address_city,
+    e.address_state,
+    e.address_zip,
+    e.age
+FROM
+    employee e 
+WHERE id=$1;

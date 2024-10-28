@@ -18,8 +18,8 @@ type Employee struct {
 	AddressStreet string
 	AddressCity   string
 	AddressState  string
-	AddressZip    string
 	Age           int32
+	AddressZip    sql.NullInt64
 }
 
 type EmployeeMaker struct {

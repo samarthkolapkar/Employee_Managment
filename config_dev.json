@@ -4,6 +4,6 @@
 	"db_port": 5432,
 	"db_user": "postgres",
 	"db_password": "Sbk@5885",
-	"db_name": "service1_db",
+	"db_name": "Employee",
 	"app_server_port": "8080"
 }
