@@ -20,6 +20,7 @@ type Employee struct {
 	AddressState  string
 	Age           int32
 	AddressZip    sql.NullInt64
+	Status        sql.NullString
 }
 
 type EmployeeMaker struct {

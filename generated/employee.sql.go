@@ -171,3 +171,49 @@ func (q *Queries) GetEmployeefromMaker(ctx context.Context, arg GetEmployeefromM
 	}
 	return items, nil
 }
+
+const getlistFromEmployeeMaker = `-- name: GetlistFromEmployeeMaker :many
+SELECT
+    id,
+    employee_data,
+    status
+FROM
+    employee_maker
+WHERE
+    status=$1 
+    AND $2::VARCHAR IS NULL 
+    OR $2::VARCHAR = '' 
+    OR (
+        CONCAT_WS(' ',
+            id
+        ) ILIKE '%' || $2::VARCHAR || '%'
+    )
+`
+
+type GetlistFromEmployeeMakerParams struct {
+	Status  string
+	Column2 string
+}
+
+func (q *Queries) GetlistFromEmployeeMaker(ctx context.Context, arg GetlistFromEmployeeMakerParams) ([]EmployeeMaker, error) {
+	rows, err := q.db.QueryContext(ctx, getlistFromEmployeeMaker, arg.Status, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EmployeeMaker
+	for rows.Next() {
+		var i EmployeeMaker
+		if err := rows.Scan(&i.ID, &i.EmployeeData, &i.Status); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

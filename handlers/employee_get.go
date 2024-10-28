@@ -11,7 +11,7 @@ import (
 )
 
 func HandleEmployeeForward(writer http.ResponseWriter, read *http.Request) {
-	var forwardRequest models.EmployeeForward
+	var forwardRequest models.EmployeeGet
 	conn := connection.GetDB()
 	err := json.NewDecoder(read.Body).Decode(&forwardRequest)
 	if err != nil {

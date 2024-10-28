@@ -48,3 +48,20 @@ SELECT
 FROM
     employee e 
 WHERE id=$1;
+
+-- name: GetlistFromEmployeeMaker :many
+SELECT
+    id,
+    employee_data,
+    status
+FROM
+    employee_maker
+WHERE
+    status=$1 
+    AND $2::VARCHAR IS NULL 
+    OR $2::VARCHAR = '' 
+    OR (
+        CONCAT_WS(' ',
+            id
+        ) ILIKE '%' || $2::VARCHAR || '%'
+    );

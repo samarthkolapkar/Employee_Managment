@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"employee/connection"
 	"employee/generated"
 	"employee/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 )
 
 func HandleEmployeeList(writer http.ResponseWriter, read *http.Request) {
@@ -22,20 +24,36 @@ func HandleEmployeeList(writer http.ResponseWriter, read *http.Request) {
 		writeResponse(writer, http.StatusBadRequest, resp)
 	}
 	queries := generated.New(db)
-	list, err := queries.EmployeeList(read.Context(), listrequest.Search)
-	if err != nil {
-		// http.Error(writer, err.Error(), http.StatusInternalServerError)
-		resp := models.JSONresponse{
-			Status:  "error",
-			Message: fmt.Sprintf("Error while excuting the query %v", err),
+	if slices.Contains(statusArray, listrequest.Status) {
+		list, err := queries.EmployeeList(read.Context(), listrequest.Search)
+		if err != nil {
+			// http.Error(writer, err.Error(), http.StatusInternalServerError)
+			resp := models.JSONresponse{
+				Status:  "error",
+				Message: fmt.Sprintf("Error while excuting the query %v", err),
+			}
+			writeResponse(writer, http.StatusInternalServerError, resp)
+			return
 		}
-		writeResponse(writer, http.StatusInternalServerError, resp)
-		return
+		resp := models.JSONresponse{
+			Status:  "success",
+			Message: nil,
+			Data:    list,
+		}
+		writeResponse(writer, http.StatusOK, resp)
+	} else {
+		makerlist, err := queries.GetlistFromEmployeeMaker(context.Background(), generated.GetlistFromEmployeeMakerParams{
+			Status:  listrequest.Status,
+			Column2: listrequest.Search,
+		})
+		if err != nil {
+			fmt.Sprintf("Error while getting the data from the database!!")
+		}
+		resp := models.JSONresponse{
+			Status: "success",
+			Data:   makerlist,
+		}
+		writeResponse(writer, http.StatusOK, resp)
 	}
-	resp := models.JSONresponse{
-		Status:  "success",
-		Message: nil,
-		Data:    list,
-	}
-	writeResponse(writer, http.StatusOK, resp)
+
 }

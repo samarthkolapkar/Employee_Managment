@@ -25,9 +25,10 @@ type JSONresponse struct {
 type EmployeeList struct {
 	Fields []string `json:"fields"`
 	Search string   `json:"search"`
+	Status string   `json:"status"`
 }
 
-type EmployeeForward struct {
+type EmployeeGet struct {
 	Id     int64  `json:"id"`
 	Status string `json:"status"`
 }
