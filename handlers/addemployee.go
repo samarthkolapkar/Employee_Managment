@@ -55,14 +55,19 @@ func HandleAddEmployee(writer http.ResponseWriter, read *http.Request) {
 
 func insertEmployee(request models.Employee, db *sql.DB) (int64, error) {
 	querier := generated.New(db)
-	// var writer http.ResponseWriter
+	var writer http.ResponseWriter
 	employeeData, err := json.Marshal(&request)
 	if err != nil {
-		fmt.Errorf("Error while marshalling %v", err)
+		resp := models.JSONresponse{
+			Status:  "error",
+			Message: fmt.Sprintf("Error while marshalling %v", err),
+			Data:    nil,
+		}
+		writeResponse(writer, http.StatusInternalServerError, resp)
 	}
 	id, err := querier.InsertEmployee(context.Background(), generated.InsertEmployeeParams{
 		EmployeeData: employeeData,
-		Status:       "DRAFT",
+		Status:       STATUS_DRAFT,
 	})
 
 	if err != nil {

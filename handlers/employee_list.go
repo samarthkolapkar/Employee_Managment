@@ -47,7 +47,12 @@ func HandleEmployeeList(writer http.ResponseWriter, read *http.Request) {
 			Column2: listrequest.Search,
 		})
 		if err != nil {
-			fmt.Sprintf("Error while getting the data from the database!!")
+			resp := models.JSONresponse{
+				Status:  "error",
+				Message: fmt.Sprintf("error while getting the data from the database!! %v", err),
+				Data:    nil,
+			}
+			writeResponse(writer,http.StatusOK,resp)
 		}
 		resp := models.JSONresponse{
 			Status: "success",
