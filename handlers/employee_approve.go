@@ -37,7 +37,7 @@ func HandleEmployeeApprove(writer http.ResponseWriter, read *http.Request) {
 		if err != nil {
 			resp := models.JSONresponse{
 				Status:  "error",
-				Message: fmt.Sprintf("error while unmarshalling the data"),
+				Message: fmt.Sprintf("error while unmarshalling the data %v", err),
 			}
 			writeResponse(writer, http.StatusBadRequest, resp)
 		}

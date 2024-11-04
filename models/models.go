@@ -25,7 +25,7 @@ type CompanyDetails struct {
 	CompanyName string   `json:"Company_name"`
 	FromDate    string   `json:"from"`
 	ToDate      string   `json:"to"`
-	Description []string `json:"descriotion"`
+	Description []string `json:"description"`
 }
 type AddressDetails struct {
 	Street string `json:"street" validate:"required"`

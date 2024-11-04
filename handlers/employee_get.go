@@ -27,7 +27,12 @@ func HandleEmployeeForward(writer http.ResponseWriter, read *http.Request) {
 		Status: forwardRequest.Status,
 	})
 	if err != nil {
-		fmt.Sprintf("error while getting the record")
+		resp := models.JSONresponse{
+			Status:  "error",
+			Message: fmt.Sprintf("error while getting the record %v", err),
+			Data:    nil,
+		}
+		writeResponse(writer, http.StatusBadRequest, resp)
 	}
 	resp := models.JSONresponse{
 		Status:  "success",

@@ -20,18 +20,28 @@ func HandleEmployeeInactive(writer http.ResponseWriter, read *http.Request) {
 	if err != nil {
 		response := models.JSONresponse{
 			Status:  "error",
-			Message: fmt.Sprintf("error while decode the json"),
+			Message: fmt.Sprintf("error while decode the json %v", err),
 		}
 		writeResponse(writer, http.StatusBadRequest, response)
 	}
 	querier := generated.New(conn)
 	data, err := querier.GetEmployeeDataFrom(context.Background(), int32(inactiverequest.Id))
 	if err != nil {
-		fmt.Sprintf("error while getting the data%v", err)
+		resp := models.JSONresponse{
+			Status:  "error",
+			Message: fmt.Sprintf("error while getting the data%v", err),
+			Data:    nil,
+		}
+		writeResponse(writer, http.StatusBadRequest, resp)
 	}
 	makerData, err := json.Marshal(&data)
 	if err != nil {
-		fmt.Sprintf("error while marshalling the data")
+		resp := models.JSONresponse{
+			Status:  "error",
+			Message: fmt.Sprintf("error while marshalling the data %v", err),
+			Data:    nil,
+		}
+		writeResponse(writer, http.StatusBadRequest, resp)
 	}
 	// fmt.Println(string(makerData))
 	id, err := querier.InsertEmployee(context.Background(), generated.InsertEmployeeParams{
