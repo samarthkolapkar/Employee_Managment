@@ -8,13 +8,16 @@ import (
 	"employee/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
 func HandleEmployeeApprove(writer http.ResponseWriter, read *http.Request) {
 	var approveRequest models.ApproveEmployee
 	var employeeinsert models.Employee
+	log.Println("started the employee approve handler")
 	conn := connection.GetDB()
+	log.Println("started unmarshalling the approve employee request")
 	err := json.NewDecoder(read.Body).Decode(&approveRequest)
 	if err != nil {
 		resp := models.JSONresponse{
@@ -24,6 +27,7 @@ func HandleEmployeeApprove(writer http.ResponseWriter, read *http.Request) {
 		writeResponse(writer, http.StatusBadRequest, resp)
 	}
 	querier := generated.New(conn)
+	log.Println("started fetching the data from the maker table")
 	makerData, err := querier.GetEmployeefromMaker(context.Background(), generated.GetEmployeefromMakerParams{
 		ID:     int32(approveRequest.Id),
 		Status: "DRAFT",
@@ -42,6 +46,15 @@ func HandleEmployeeApprove(writer http.ResponseWriter, read *http.Request) {
 			writeResponse(writer, http.StatusBadRequest, resp)
 		}
 	}
+	validationErrors := validateEmployee(employeeinsert)
+	if len(validationErrors) > 0 {
+		resp := models.JSONresponse{
+			Status:  "error",
+			Message: validationErrors,
+		}
+		writeResponse(writer, http.StatusBadRequest, resp)
+	}
+	log.Println("started inserting the data into master table")
 	id, err := querier.InsertIntoEmployee(context.Background(), generated.InsertIntoEmployeeParams{
 		FirstName: employeeinsert.FirstName,
 		MiddleName: sql.NullString{
@@ -67,5 +80,6 @@ func HandleEmployeeApprove(writer http.ResponseWriter, read *http.Request) {
 		Data:    id,
 		Message: nil,
 	}
+	log.Println("successfully inserted the data into master table")
 	writeResponse(writer, http.StatusOK, resp)
 }

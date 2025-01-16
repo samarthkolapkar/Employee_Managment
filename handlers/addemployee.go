@@ -8,6 +8,7 @@ import (
 	"employee/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	// "google.golang.org/grpc/profiling/service"
 )
@@ -15,7 +16,7 @@ import (
 func HandleAddEmployee(writer http.ResponseWriter, read *http.Request) {
 	var request models.Employee
 	connc := connection.GetDB()
-
+	log.Println("started the fresh new request")
 	//bind to the body of request to the request structure
 	err := json.NewDecoder(read.Body).Decode(&request)
 	if err != nil {
@@ -26,6 +27,7 @@ func HandleAddEmployee(writer http.ResponseWriter, read *http.Request) {
 		}
 		writeResponse(writer, http.StatusBadRequest, resp)
 	}
+	log.Println("successfully binded the json")
 	validationErrors := validateEmployee(request)
 	if len(validationErrors) > 0 {
 		resp := models.JSONresponse{
@@ -49,6 +51,7 @@ func HandleAddEmployee(writer http.ResponseWriter, read *http.Request) {
 			Message: "Employee added successfully",
 		}
 		writeResponse(writer, http.StatusOK, resp)
+		log.Println("successfully added the employee")
 	}
 
 }
@@ -56,6 +59,7 @@ func HandleAddEmployee(writer http.ResponseWriter, read *http.Request) {
 func insertEmployee(request models.Employee, db *sql.DB) (int64, error) {
 	querier := generated.New(db)
 	var writer http.ResponseWriter
+	log.Println("started unmarshalling the request")
 	employeeData, err := json.Marshal(&request)
 	if err != nil {
 		resp := models.JSONresponse{
@@ -65,6 +69,7 @@ func insertEmployee(request models.Employee, db *sql.DB) (int64, error) {
 		}
 		writeResponse(writer, http.StatusInternalServerError, resp)
 	}
+	log.Println("started inserting the employee")
 	id, err := querier.InsertEmployee(context.Background(), generated.InsertEmployeeParams{
 		EmployeeData: employeeData,
 		Status:       STATUS_DRAFT,

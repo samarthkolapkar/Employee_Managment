@@ -15,7 +15,7 @@ func main() {
 	host := "localhost"
 	port := 5432
 	user := "postgres"
-	password := "Sbk@5885"
+	password := "password"
 	dbname := "Employee"
 	sslmode := "disable"
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",

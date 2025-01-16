@@ -7,6 +7,7 @@ import (
 	"employee/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -16,6 +17,7 @@ func HandleEmployeeInactive(writer http.ResponseWriter, read *http.Request) {
 		conn            = connection.GetDB()
 		// employeedata    models.Employee
 	)
+	log.Println("started the inactive handler")
 	err := json.NewDecoder(read.Body).Decode(&inactiverequest)
 	if err != nil {
 		response := models.JSONresponse{
@@ -25,6 +27,7 @@ func HandleEmployeeInactive(writer http.ResponseWriter, read *http.Request) {
 		writeResponse(writer, http.StatusBadRequest, response)
 	}
 	querier := generated.New(conn)
+	log.Println("started fetching the data from the master table")
 	data, err := querier.GetEmployeeDataFrom(context.Background(), int32(inactiverequest.Id))
 	if err != nil {
 		resp := models.JSONresponse{
@@ -34,6 +37,7 @@ func HandleEmployeeInactive(writer http.ResponseWriter, read *http.Request) {
 		}
 		writeResponse(writer, http.StatusBadRequest, resp)
 	}
+	log.Println("started marshalling the data")
 	makerData, err := json.Marshal(&data)
 	if err != nil {
 		resp := models.JSONresponse{
@@ -44,6 +48,7 @@ func HandleEmployeeInactive(writer http.ResponseWriter, read *http.Request) {
 		writeResponse(writer, http.StatusBadRequest, resp)
 	}
 	// fmt.Println(string(makerData))
+	log.Println("started inserting the data to maker request")
 	id, err := querier.InsertEmployee(context.Background(), generated.InsertEmployeeParams{
 		EmployeeData: makerData,
 		Status:       "INACTIVE",
@@ -56,6 +61,7 @@ func HandleEmployeeInactive(writer http.ResponseWriter, read *http.Request) {
 		}
 		writeResponse(writer, http.StatusBadRequest, response)
 	}
+	log.Println("successfully inactive the employee")
 	response := models.JSONresponse{
 		Status: "success",
 		Data:   id,

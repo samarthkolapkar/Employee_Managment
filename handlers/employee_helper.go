@@ -3,6 +3,7 @@ package handlers
 import (
 	"employee/models"
 	"encoding/json"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -14,6 +15,7 @@ var validationErrors []wscutils.ErrorMessage
 
 // This function is used to validate the request
 func validateEmployee(employee models.Employee) []wscutils.ErrorMessage {
+	log.Println("started custom validation of the employee request while validating the employee")
 	if strings.TrimSpace(employee.FirstName) == EMPTY_STRING {
 		validationErrors = append(validationErrors, BuildErrorMessages(INAVALID_DATA, FIRST_NAME, "First name cannot be empty"))
 	}

@@ -3,7 +3,7 @@
 	"db_host": "localhost",
 	"db_port": 5432,
 	"db_user": "postgres",
-	"db_password": "Sbk@5885",
+	"db_password": "password",
 	"db_name": "Employee",
 	"app_server_port": "8080"
 }
