@@ -9,6 +9,13 @@ import (
 	"encoding/json"
 )
 
+type Common struct {
+	ID       int32
+	Type     string
+	Value    string
+	IsActive bool
+}
+
 type Employee struct {
 	ID            int32
 	FirstName     string

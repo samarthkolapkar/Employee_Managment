@@ -187,7 +187,7 @@ WHERE
         CONCAT_WS(' ',
             id
         ) ILIKE '%' || $2::VARCHAR || '%'
-    )
+)
 `
 
 type GetlistFromEmployeeMakerParams struct {
@@ -205,6 +205,40 @@ func (q *Queries) GetlistFromEmployeeMaker(ctx context.Context, arg GetlistFromE
 	for rows.Next() {
 		var i EmployeeMaker
 		if err := rows.Scan(&i.ID, &i.EmployeeData, &i.Status); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const statusCount = `-- name: StatusCount :many
+select status::text,COUNT(*)as status_count from employee_maker group by status
+UNION ALL
+Select status::text ,count(*) as status_count from employee group by status
+`
+
+type StatusCountRow struct {
+	Status      string
+	StatusCount int64
+}
+
+func (q *Queries) StatusCount(ctx context.Context) ([]StatusCountRow, error) {
+	rows, err := q.db.QueryContext(ctx, statusCount)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StatusCountRow
+	for rows.Next() {
+		var i StatusCountRow
+		if err := rows.Scan(&i.Status, &i.StatusCount); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

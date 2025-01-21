@@ -11,7 +11,19 @@ type Employee struct {
 	Address            AddressDetails    `json:"address"`
 	Age                int
 }
-
+type EmployeeResponse struct {
+	ID                 int64             `json:"id"`
+	FirstName          string            `json:"first_name" validate:"required"`
+	MiddleName         string            `json:"middle_name" validate:"required"`
+	LastName           string            `json:"last_name" validate:"required"`
+	PanNumber          string            `json:"pan_number" validate:"required"`
+	Contact            ContactDetails    `json:"contact"`
+	IsExperienced      bool              `json:"is_experienced"`
+	ExperiencedDetails ExperienceDetails `json:"experienced_details"`
+	Address            AddressDetails    `json:"address"`
+	Age                int               `json:"age"`
+	Status             string            `json:"status"`
+}
 type ContactDetails struct {
 	ContactNumber string `json:"contact_number" validate:"required"`
 	Email         string `json:"email_id" validate:"required"`
@@ -40,6 +52,13 @@ type JSONresponse struct {
 	Message any    `json:"message"`
 }
 
+type JSONListresponse struct {
+	Status      string `json:"status"`
+	Count       int    `json:"count"`
+	Data        any    `json:"data"`
+	StatusCount any    `json:"status_count"`
+	Message     any    `json:"message"`
+}
 type EmployeeList struct {
 	Fields []string `json:"fields"`
 	Search string   `json:"search"`

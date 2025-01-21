@@ -64,4 +64,10 @@ WHERE
         CONCAT_WS(' ',
             id
         ) ILIKE '%' || $2::VARCHAR || '%'
-    );
+);
+
+
+-- name: StatusCount :many
+select status::text,COUNT(*)as status_count from employee_maker group by status
+UNION ALL
+Select status::text ,count(*) as status_count from employee group by status;

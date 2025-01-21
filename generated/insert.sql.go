@@ -11,6 +11,33 @@ import (
 	"encoding/json"
 )
 
+const getSearchCountFromMaker = `-- name: GetSearchCountFromMaker :one
+SELECT COUNT(*) FROM employee_maker e
+WHERE e.status=$1
+AND (
+	$2::VARCHAR IS NULL 
+	OR $2::VARCHAR=''
+	OR(
+		CONCAT_WS(
+			e.employee_data->>'first_name',
+			e.employee_data->>'pan_numbar'
+		)ILIKE '%' || $2::VARCHAR || '%'
+	)
+)
+`
+
+type GetSearchCountFromMakerParams struct {
+	Status  string
+	Column2 string
+}
+
+func (q *Queries) GetSearchCountFromMaker(ctx context.Context, arg GetSearchCountFromMakerParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getSearchCountFromMaker, arg.Status, arg.Column2)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const insertEmployee = `-- name: InsertEmployee :one
 INSERT INTO employee_maker (
     employee_data,

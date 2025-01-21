@@ -62,6 +62,11 @@ func writeResponse(writer http.ResponseWriter, code int, response models.JSONres
 	writer.WriteHeader(code)
 	json.NewEncoder(writer).Encode(response)
 }
+func writeListResponse(writer http.ResponseWriter, code int, response models.JSONListresponse) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(code)
+	json.NewEncoder(writer).Encode(response)
+}
 
 // This function is used to validate the pan
 func validatePan(pan string) bool {
